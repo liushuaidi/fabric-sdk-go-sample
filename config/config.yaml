@@ -1,0 +1,98 @@
+
+client:
+  organization: org1
+  logging:
+    level: info
+  cryptoconfig:
+    path: /root/go/src/github.com/hyperledger/fabric-samples/first-network/crypto-config
+  credentialStore:
+    path: /tmp/state-store
+    cryptoStore:
+      path: /tmp/msp
+  tlsCerts:
+    systemCertPool: true
+
+channels:
+  mychannel:
+    peers:
+      peer0.org1.example.com:
+        endorsingPeer: true
+        chaincodeQuery: true
+        ledgerQuery: true
+        eventSource: true
+
+organizations:
+
+  org1:
+    mspid: Org1MSP
+    cryptoPath:  peerOrganizations/org1.example.com/users/{username}@org1.example.com/msp
+    peers:
+      - peer0.org1.example.com
+
+    certificateAuthorities:
+      - ca.org1.example.com
+
+orderers:
+
+  orderer.example.com:
+    url: orderer.example.com
+    grpcOptions:
+      ssl-target-name-override: orderer.example.com
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      allow-insecure: false
+    tlsCACerts:
+      path: /root/go/src/github.com/hyperledger/fabric-samples/first-network/crypto-config/ordererOrganizations/example.com/orderers/orderer.example.com/tls/ca.crt
+
+peers:
+
+  peer0.org1.example.com:
+    url: peer0.org1.example.com
+    grpcOptions:
+      ssl-target-name-override: peer0.org1.example.com
+      keep-alive-time: 0s
+      keep-alive-timeout: 20s
+      keep-alive-permit: false
+      fail-fast: false
+      allow-insecure: false
+    tlsCACerts:
+      path: /root/go/src/github.com/hyperledger/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+
+certificateAuthorities:
+
+  ca.org1.example.com:
+    url: https://ca.org1.example.com:7054
+    httpOptions:
+      verify: false
+    tlsCACerts:
+      path: /root/go/src/github.com/hyperledger/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem
+      client:
+        key:
+          path: /root/go/src/github.com/hyperledger/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/tls/client.key
+        cert:
+          path: /root/go/src/github.com/hyperledger/fabric-samples/first-network/crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/tls/client.crt
+    registrar:
+      enrollId: admin
+      enrollSecret: adminpw
+
+entityMatchers:
+
+  peer:
+    - pattern: peer0.org1.example.com
+      urlSubstitutionExp: grpcs://127.0.0.1:7051
+      sslTargetOverrideUrlSubstitutionExp: peer0.org1.example.com
+      mappedHost: peer0.org1.example.com
+
+  orderer:
+    - pattern: orderer.example.com
+      urlSubstitutionExp: grpcs://127.0.0.1:7050
+      sslTargetOverrideUrlSubstitutionExp: orderer.example.com
+      mappedHost: orderer.example.com
+
+  certificateAuthority:
+    - pattern: ca.org1.example.com
+      urlSubstitutionExp: https://127.0.0.1:7054
+      sslTargetOverrideUrlSubstitutionExp: ca.org1.example.com
+      mappedHost: ca.org1.example.com
